@@ -140,31 +140,3 @@ claude_assistant:
   # 2. CLAUDE_CODE_OAUTH_TOKEN: Claude Code OAuth token or ANTHROPIC_API_KEY
   #    - Get from: https://claude.ai/settings
   # Important: Do NOT mark as "Protected" or they won't work on MR pipelines!
-
-# Alternative: Issue comment handler (for creating branches from issues)
-claude_issue_handler:
-  image: oven/bun:1.1.29-alpine
-  stage: build
-
-  tags:
-    - claude-code
-
-  before_script:
-    - apk add --no-cache git openssh-client ca-certificates
-    - git config --global user.name "Claude Assistant"
-    - git config --global user.email "claude@agenticlab.tech"
-    - git clone https://github.com/RealMikeChong/claude-code-for-gitlab.git /tmp/claude-code
-    - cd /tmp/claude-code && bun install --frozen-lockfile
-    - cd $CI_PROJECT_DIR
-
-  script:
-    - cd /tmp/claude-code && bun run src/entrypoints/prepare.ts
-
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "trigger" && $TRIGGER_TYPE == "issue_comment"'
-      when: always
-
-  variables:
-    CLAUDE_CODE_OAUTH_TOKEN: $CLAUDE_CODE_OAUTH_TOKEN
-    CLAUDE_BRANCH: "${CLAUDE_BRANCH_PREFIX}issue-${CI_ISSUE_IID}"
-    CI_SERVER_URL: "https://git.agenticlab.tech"
