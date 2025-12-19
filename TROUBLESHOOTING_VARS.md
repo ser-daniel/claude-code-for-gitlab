@@ -2,13 +2,27 @@
 
 ## Problem
 
-CI pipeline fails with error:
+CI pipeline fails with authentication errors such as:
 ```
 CLAUDE_CODE_OAUTH_TOKEN: UNEXPANDED ("$CLAUDE_CODE_OAUTH_TOKEN") - Variable not set in CI/CD settings!
 GitbeakerRequestError: Unauthorized
 ```
 
-The variable appears as a literal string `"$CLAUDE_CODE_OAUTH_TOKEN"` instead of being expanded to the actual token value.
+The variable appears as a literal string instead of being expanded to the actual token value.
+
+## Understanding the Authentication Flow
+
+Claude Code for GitLab requires **TWO separate sets of credentials**:
+
+1. **GitLab OAuth App Credentials** (for GitLab API access):
+   - `GITLAB_OAUTH_APP_ID` - Your GitLab OAuth application ID
+   - `GITLAB_OAUTH_APP_SECRET` - Your GitLab OAuth application secret
+
+2. **Claude/Anthropic Credentials** (for Claude AI API access):
+   - `CLAUDE_CODE_OAUTH_TOKEN` - Your Claude Code OAuth token
+   - OR `ANTHROPIC_API_KEY` - Your Anthropic API key (alternative)
+
+**Common Mistake**: Using `CLAUDE_CODE_OAUTH_TOKEN` for GitLab authentication. This token is for Anthropic API, not GitLab!
 
 ## Root Cause
 
@@ -27,7 +41,7 @@ Since Claude Code is typically triggered on merge request comments, and MRs are 
 
 ## Solution
 
-### Step 1: Update Variable Settings in GitLab
+### Step 1: Add All Required Variables in GitLab
 
 1. Navigate to your project or group:
    - **Project**: `https://git.agenticlab.tech/YOUR_GROUP/YOUR_PROJECT/-/settings/ci_cd`
@@ -35,15 +49,33 @@ Since Claude Code is typically triggered on merge request comments, and MRs are 
 
 2. Expand **"Variables"** section
 
-3. Find `CLAUDE_CODE_OAUTH_TOKEN` and click **Edit**
+3. Add/update the following three variables:
 
-4. Configure these settings:
-   - ❌ **Protected**: **UNCHECK THIS** (this is the critical fix!)
-   - ✅ **Masked**: Keep checked (for security)
-   - ✅ **Expand variable reference**: Keep checked
-   - **Environment scope**: `*` (All - default)
+#### Variable 1: GITLAB_OAUTH_APP_ID
+   - **Key**: `GITLAB_OAUTH_APP_ID`
+   - **Value**: Your GitLab OAuth app ID (e.g., `0096ebff89d9...`)
+   - ❌ **Protected**: NO
+   - ❌ **Masked**: NO (it's not sensitive)
+   - ✅ **Expand variable reference**: YES
+   - **Environment scope**: `*` (All)
 
-5. Click **Update variable**
+#### Variable 2: GITLAB_OAUTH_APP_SECRET
+   - **Key**: `GITLAB_OAUTH_APP_SECRET`
+   - **Value**: Your GitLab OAuth app secret (e.g., `gloas-61d52ba1...`)
+   - ❌ **Protected**: NO (critical!)
+   - ✅ **Masked**: YES (it's sensitive)
+   - ✅ **Expand variable reference**: YES
+   - **Environment scope**: `*` (All)
+
+#### Variable 3: CLAUDE_CODE_OAUTH_TOKEN
+   - **Key**: `CLAUDE_CODE_OAUTH_TOKEN`
+   - **Value**: Your Claude Code OAuth token from claude.ai
+   - ❌ **Protected**: NO (critical!)
+   - ✅ **Masked**: YES (it's sensitive)
+   - ✅ **Expand variable reference**: YES
+   - **Environment scope**: `*` (All)
+
+4. Click **Add variable** for each one
 
 ### Step 2: Verify in CI Pipeline
 

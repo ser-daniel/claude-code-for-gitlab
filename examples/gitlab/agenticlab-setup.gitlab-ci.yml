@@ -103,8 +103,18 @@ claude_assistant:
     # GitLab server URL
     CI_SERVER_URL: "https://git.agenticlab.tech"
 
-  # Note: CLAUDE_CODE_OAUTH_TOKEN must be set in Settings → CI/CD → Variables
-  # Important: Do NOT mark it as "Protected" or it won't work on MR pipelines!
+    # Authentication - Claude Code OAuth token for Anthropic API
+    CLAUDE_CODE_OAUTH_TOKEN: $CLAUDE_CODE_OAUTH_TOKEN
+
+    # GitLab OAuth app credentials for GitLab API authentication
+    GITLAB_OAUTH_APP_ID: $GITLAB_OAUTH_APP_ID
+    GITLAB_OAUTH_APP_SECRET: $GITLAB_OAUTH_APP_SECRET
+
+  # Note: Add these variables in Settings → CI/CD → Variables:
+  # - CLAUDE_CODE_OAUTH_TOKEN: Your Claude Code OAuth token (for Anthropic API)
+  # - GITLAB_OAUTH_APP_ID: Your GitLab OAuth app ID (for GitLab API)
+  # - GITLAB_OAUTH_APP_SECRET: Your GitLab OAuth app secret (for GitLab API)
+  # Important: Do NOT mark them as "Protected" or they won't work on MR pipelines!
 
 # Alternative: Issue comment handler (for creating branches from issues)
 claude_issue_handler:

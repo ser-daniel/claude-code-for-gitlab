@@ -232,15 +232,22 @@ claude_assistant:
 
 In your project or group settings (**Settings → CI/CD → Variables**):
 
-| Variable | Value | Protected | Masked |
-|----------|-------|-----------|---------|
-| `CLAUDE_CODE_OAUTH_TOKEN` | Your Claude OAuth token | ❌ **NO** | ✅ |
-| `ANTHROPIC_API_KEY` | Your Anthropic API key (alternative) | ❌ **NO** | ✅ |
+| Variable | Value | Protected | Masked | Description |
+|----------|-------|-----------|---------|-------------|
+| `CLAUDE_CODE_OAUTH_TOKEN` | Your Claude OAuth token | ❌ **NO** | ✅ | For Anthropic API authentication |
+| `GITLAB_OAUTH_APP_ID` | `0096ebff89d9...` | ❌ **NO** | ❌ | Your GitLab OAuth app ID |
+| `GITLAB_OAUTH_APP_SECRET` | `gloas-61d52ba1...` | ❌ **NO** | ✅ | Your GitLab OAuth app secret |
+
+**How to get these values:**
+
+1. **CLAUDE_CODE_OAUTH_TOKEN**: Get from [Claude Code settings](https://claude.ai/settings)
+2. **GITLAB_OAUTH_APP_ID**: From your GitLab OAuth app (already created: `0096ebff89d91305b49dc53df1a9b16557a6dcc8f437372141f8bf2ecb7d1eef`)
+3. **GITLAB_OAUTH_APP_SECRET**: From your GitLab OAuth app (already created: `gloas-61d52ba15f4151b87d554279d1502fc7ce6993dea84ee0b41ff688c86946d3d7`)
 
 **IMPORTANT**: Do **NOT** mark these variables as "Protected"! Protected variables are only available on protected branches, which will prevent Claude Code from working on merge request pipelines from feature branches.
 
 **Security Note**: While not marked as protected, these variables should be:
-- ✅ **Masked**: Yes (hides values in job logs)
+- ✅ **Masked**: Yes for secrets (hides values in job logs)
 - ✅ **Expand variable reference**: Yes (allows variable expansion)
 - ✅ **Environment scope**: All (default)
 
