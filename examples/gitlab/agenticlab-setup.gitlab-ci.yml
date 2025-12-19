@@ -56,7 +56,7 @@ claude_assistant:
     # Debug: Check if prompt file was created
     - echo "=== Prompt File Debug ==="
     - ls -la /tmp/claude-prompts/ || echo "Directory /tmp/claude-prompts does not exist"
-    - if [ -f "/tmp/claude-prompts/claude-prompt.txt" ]; then echo "✓ Prompt file exists (size: $(stat -c%s /tmp/claude-prompts/claude-prompt.txt) bytes)"; else echo "✗ Prompt file NOT found"; fi
+    - test -f "/tmp/claude-prompts/claude-prompt.txt" && echo "✓ Prompt file exists" || echo "✗ Prompt file NOT found"
     - echo "========================"
 
     # Check if trigger was found (prompt file created)
