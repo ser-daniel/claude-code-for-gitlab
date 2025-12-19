@@ -45,6 +45,13 @@ claude_assistant:
     - echo "Step 1 - Preparing Claude Code action..."
     - cd /tmp/claude-code && bun run src/entrypoints/prepare.ts
 
+    # Check if trigger was found (prompt file created)
+    - |
+      if [ ! -f "/tmp/claude-prompts/claude-prompt.txt" ]; then
+        echo "No @claude trigger found - skipping Claude execution"
+        exit 0
+      fi
+
     # Step 2: Install Claude Code globally
     - echo "Step 2 - Installing Claude Code..."
     - bun install -g @anthropic-ai/claude-code@1.0.60
