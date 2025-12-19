@@ -55,13 +55,15 @@ claude_assistant:
 
     # Debug: Check if prompt file was created
     - echo "=== Prompt File Debug ==="
-    - ls -la /tmp/claude-prompts/ || echo "Directory /tmp/claude-prompts does not exist"
-    - test -f "/tmp/claude-prompts/claude-prompt.txt" && echo "✓ Prompt file exists" || echo "✗ Prompt file NOT found"
+    - echo "CI_BUILDS_DIR=${CI_BUILDS_DIR}"
+    - echo "Expected prompt path: ${CI_BUILDS_DIR}/.claude-temp/claude-prompts/claude-prompt.txt"
+    - ls -la ${CI_BUILDS_DIR}/.claude-temp/claude-prompts/ || echo "Directory does not exist"
+    - test -f "${CI_BUILDS_DIR}/.claude-temp/claude-prompts/claude-prompt.txt" && echo "✓ Prompt file exists" || echo "✗ Prompt file NOT found"
     - echo "========================"
 
     # Check if trigger was found (prompt file created)
     - |
-      if [ ! -f "/tmp/claude-prompts/claude-prompt.txt" ]; then
+      if [ ! -f "${CI_BUILDS_DIR}/.claude-temp/claude-prompts/claude-prompt.txt" ]; then
         echo "No @claude trigger found - skipping Claude execution"
         exit 0
       fi
@@ -86,7 +88,7 @@ claude_assistant:
 
       # Set up environment for base-action
       export CLAUDE_CODE_ACTION="1"
-      export INPUT_PROMPT_FILE="/tmp/claude-prompts/claude-prompt.txt"
+      export INPUT_PROMPT_FILE="${CI_BUILDS_DIR}/.claude-temp/claude-prompts/claude-prompt.txt"
       export INPUT_TIMEOUT_MINUTES="30"
       export INPUT_MCP_CONFIG=""
       export INPUT_SETTINGS=""
