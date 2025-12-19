@@ -53,6 +53,12 @@ claude_assistant:
     - echo "Step 1 - Preparing Claude Code action..."
     - cd /tmp/claude-code && bun run src/entrypoints/prepare.ts
 
+    # Debug: Check if prompt file was created
+    - echo "=== Prompt File Debug ==="
+    - ls -la /tmp/claude-prompts/ || echo "Directory /tmp/claude-prompts does not exist"
+    - if [ -f "/tmp/claude-prompts/claude-prompt.txt" ]; then echo "✓ Prompt file exists (size: $(stat -c%s /tmp/claude-prompts/claude-prompt.txt) bytes)"; else echo "✗ Prompt file NOT found"; fi
+    - echo "========================"
+
     # Check if trigger was found (prompt file created)
     - |
       if [ ! -f "/tmp/claude-prompts/claude-prompt.txt" ]; then
