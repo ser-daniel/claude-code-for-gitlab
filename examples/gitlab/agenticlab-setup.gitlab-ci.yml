@@ -41,6 +41,14 @@ claude_assistant:
     - cd $CI_PROJECT_DIR
 
   script:
+    # Debug: Check webhook variables
+    - echo "=== Webhook Variables Debug ==="
+    - echo "CLAUDE_TRIGGER=${CLAUDE_TRIGGER:-not set}"
+    - echo "DIRECT_PROMPT=${DIRECT_PROMPT:-not set}"
+    - echo "CLAUDE_NOTE=${CLAUDE_NOTE:-not set}"
+    - echo "GITLAB_WEBHOOK_PAYLOAD length=${#GITLAB_WEBHOOK_PAYLOAD}"
+    - echo "==============================="
+
     # Step 1: Run prepare script (WITHOUT proxy to avoid undici issues)
     - echo "Step 1 - Preparing Claude Code action..."
     - cd /tmp/claude-code && bun run src/entrypoints/prepare.ts
@@ -99,11 +107,11 @@ claude_assistant:
       fi
 
   rules:
-    # Trigger on MR events (new MR, comments, etc.)
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    # Trigger via webhook when @claude is mentioned (highest priority)
+    - if: '$CLAUDE_TRIGGER == "true"'
       when: always
-    # Trigger via webhook for issue comments
-    - if: '$CI_PIPELINE_SOURCE == "trigger" && $TRIGGER_TYPE == "issue_comment"'
+    # Trigger on MR events (new MR, comments, etc.) - but skip if no trigger
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
       when: always
 
   variables:
@@ -115,6 +123,9 @@ claude_assistant:
 
     # Claude authentication (for Anthropic API access)
     CLAUDE_CODE_OAUTH_TOKEN: $CLAUDE_CODE_OAUTH_TOKEN
+
+    # Note: Webhook variables (GITLAB_WEBHOOK_PAYLOAD, DIRECT_PROMPT, CLAUDE_NOTE, etc.)
+    # are automatically passed through from the webhook trigger and don't need to be declared here
 
   # Required CI/CD Variables (Settings → CI/CD → Variables):
   # 1. CLAUDE_CODE_GL_ACCESS_TOKEN: GitLab Personal Access Token

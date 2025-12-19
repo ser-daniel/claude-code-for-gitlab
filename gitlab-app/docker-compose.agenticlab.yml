@@ -1,0 +1,37 @@
+version: "3.9"
+
+services:
+  claude-webhook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: claude-webhook
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - "127.0.0.1:3001:3000"  # Changed to 3001 (langfuse uses 3000)
+    depends_on:
+      - redis
+    networks:
+      - gitlab-ce_gitlab  # Connect to GitLab's network
+      - default
+    extra_hosts:
+      - "git.agenticlab.tech:172.17.0.1"  # Map to host for accessing GitLab
+
+  redis:
+    image: redis:7-alpine
+    container_name: claude-webhook-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - default
+
+networks:
+  gitlab-ce_gitlab:
+    external: true
+  default:
+
+volumes:
+  redis_data:
