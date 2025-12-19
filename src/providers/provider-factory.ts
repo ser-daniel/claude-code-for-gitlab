@@ -58,8 +58,24 @@ export function createProvider(options: ProviderFactoryOptions): SCMProvider {
     case "gitlab": {
       // Get GitLab-specific configuration
       const projectId = process.env.CI_PROJECT_ID;
-      const mrIid = process.env.CI_MERGE_REQUEST_IID;
-      const issueIid = process.env.CLAUDE_RESOURCE_ID;
+
+      // Check webhook trigger variables first (higher priority)
+      const resourceType = process.env.CLAUDE_RESOURCE_TYPE;
+      const resourceId = process.env.CLAUDE_RESOURCE_ID;
+
+      // Determine mrIid and issueIid based on resource type
+      let mrIid = process.env.CI_MERGE_REQUEST_IID;
+      let issueIid: string | undefined;
+
+      if (resourceType === "merge_request" && resourceId) {
+        mrIid = resourceId;
+      } else if (resourceType === "issue" && resourceId) {
+        issueIid = resourceId;
+      } else if (resourceId && !resourceType) {
+        // Fallback: assume it's an issue if no type specified
+        issueIid = resourceId;
+      }
+
       const host = process.env.CI_SERVER_URL || "https://gitlab.com";
       const pipelineUrl = process.env.CI_PIPELINE_URL;
 
