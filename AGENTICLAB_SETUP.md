@@ -234,15 +234,21 @@ In your project or group settings (**Settings → CI/CD → Variables**):
 
 | Variable | Value | Protected | Masked | Description |
 |----------|-------|-----------|---------|-------------|
-| `CLAUDE_CODE_OAUTH_TOKEN` | Your Claude OAuth token | ❌ **NO** | ✅ | For Anthropic API authentication |
-| `GITLAB_OAUTH_APP_ID` | `0096ebff89d9...` | ❌ **NO** | ❌ | Your GitLab OAuth app ID |
-| `GITLAB_OAUTH_APP_SECRET` | `gloas-61d52ba1...` | ❌ **NO** | ✅ | Your GitLab OAuth app secret |
+| `CLAUDE_CODE_GL_ACCESS_TOKEN` | `glpat-Ykn9BA...` | ❌ **NO** | ✅ | GitLab Personal Access Token (for GitLab API) |
+| `CLAUDE_CODE_OAUTH_TOKEN` | Your Claude token | ❌ **NO** | ✅ | Claude Code OAuth token (for Anthropic API) |
 
 **How to get these values:**
 
-1. **CLAUDE_CODE_OAUTH_TOKEN**: Get from [Claude Code settings](https://claude.ai/settings)
-2. **GITLAB_OAUTH_APP_ID**: From your GitLab OAuth app (already created: `0096ebff89d91305b49dc53df1a9b16557a6dcc8f437372141f8bf2ecb7d1eef`)
-3. **GITLAB_OAUTH_APP_SECRET**: From your GitLab OAuth app (already created: `gloas-61d52ba15f4151b87d554279d1502fc7ce6993dea84ee0b41ff688c86946d3d7`)
+1. **CLAUDE_CODE_GL_ACCESS_TOKEN**: GitLab Personal Access Token
+   - Go to https://git.agenticlab.tech/-/user_settings/personal_access_tokens
+   - Create token with scopes: `api`, `read_repository`, `write_repository`
+   - **You already have one:** `glpat-Ykn9BATOykcTLu6IDLpJ1m86MQp1OjMH.01.0w1pbijb5` (from `.env`)
+
+2. **CLAUDE_CODE_OAUTH_TOKEN**: Claude Code OAuth token
+   - Get from [Claude Code settings](https://claude.ai/settings)
+   - Or use `ANTHROPIC_API_KEY` as alternative
+
+**Note:** The GitLab OAuth app credentials (`GITLAB_APP_ID` and `GITLAB_APP_SECRET`) are **NOT** used in CI/CD pipelines. They're only used by the webhook service for OAuth authentication flows.
 
 **IMPORTANT**: Do **NOT** mark these variables as "Protected"! Protected variables are only available on protected branches, which will prevent Claude Code from working on merge request pipelines from feature branches.
 
