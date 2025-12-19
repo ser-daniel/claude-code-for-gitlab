@@ -7,3 +7,11 @@ logs/
 # TypeScript build cache
 *.tsbuildinfo
 .tsbuildinfo
+
+# Environment files with secrets
+.env
+**/.env
+
+# Agenticlab-specific setup files
+*agenticlab*
+AGENTICLAB_SETUP.md
